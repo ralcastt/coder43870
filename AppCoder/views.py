@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import Curso, Profesor
 from django.http import HttpResponse
-from .forms import CursoForm
+from .forms import CursoForm, ProfesorForm
 
 
 def crear_curso(request):
@@ -32,9 +32,26 @@ def inicio(request):
 
 
 def profesores(request):
-    profes=Profesor.objects.all()
-    return render(request,"AppCoder/profesores.html", {"profes":profes})
+    if request.method=="POST":
+        form= ProfesorForm(request.POST)
+        if form.is_valid():
+            info=form.cleaned_data
+            nombre=info["nombre"]
+            apellido=info["apellido"]
+            email=info["email"]
+            profesion=info["profesion"]
+            profesor=Profesor(nombre=nombre, apellido=apellido, email=email, profesion=profesion)
+            profesor.save()
+            formulario_profesor=ProfesorForm()
 
+            return render(request, "Appcoder/profesores.html", {"mensaje":"Profesor Creado", "formulario":formulario_profesor})
+        else:
+            return render(request, "Appcoder/profesores.html", {"mensaje":"Datos Invalidos"})
+
+    else:
+        formulario_profesor=ProfesorForm()
+
+    return render(request,"AppCoder/profesores.html", {"formulario":formulario_profesor})
 
 
 
@@ -67,4 +84,19 @@ def estudiantes(request):
 
 
 def entregables(request):
-    return render(request,"AppCoder/entregables.html")            
+    return render(request,"AppCoder/entregables.html")     
+
+
+
+
+def busquedaComision(request):
+    return render(request,"AppCoder/busquedaComision.html")
+
+
+def buscar(request):
+    comision=request.GET["comision"]
+    if comision!="":
+        cursos=Curso.objects.filter(comision__icontains=comision)
+        return render(request, "AppCoder/resultadosBusqueda.html", {"cursos":cursos} )
+    else:
+        return render(request, "AppCoder/resultadosBusqueda.html", {"mensaje":"Datos invalidos"} )

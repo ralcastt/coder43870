@@ -1,0 +1,14 @@
+{% extends "Appcoder/padre.html" %}
+
+{% load static %}
+
+{% block titulo %} ESTA ES LA BUSQUEDA DE COMISIONES {% endblock %}
+
+{% block contenido_que_cambia %}
+<form action="{% url 'buscar' %}" method="GET">
+
+    <input type="number" name="comision" id="comision" placeholder="Inserte Comision">
+    <input type="submit" value="buscar comision">
+</form>
+<h2> {{ mensaje }} </h2>
+{% endblock %}
